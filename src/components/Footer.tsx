@@ -1,5 +1,6 @@
 import React from 'react';
 import { MessageCircle, ShieldCheck, Sparkles, Heart, Phone, MapPin, Clock } from 'lucide-react';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Footer() {
   return (
@@ -12,21 +13,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full border border-[#D4AF37] p-1 flex items-center justify-center bg-[#4D0917]">
-                <svg viewBox="0 0 100 100" className="w-6 h-6 fill-[#D4AF37]">
-                  <path d="M50 15 C35 15, 20 35, 20 60 C20 78, 35 88, 50 90 C65 88, 80 78, 80 60 C80 35, 65 15, 50 15 Z" fill="none" stroke="#D4AF37" strokeWidth="3"/>
-                  <path d="M50 30 C54 38, 62 48, 59 60 C56 70, 50 72, 50 72 C50 72, 44 70, 41 60 C38 48, 46 38, 50 30 Z"/>
-                  <circle cx="50" cy="22" r="3"/>
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-serif text-lg font-bold text-[#F9E29D] tracking-wider">
-                  VAARAHI VAAGDEVI
-                </h3>
-                <p className="text-[10px] tracking-[0.25em] text-[#D4AF37]">COLLECTIONS</p>
-              </div>
-            </div>
+            <a href="/" className="block">
+              <BrandLogo size="md" />
+            </a>
             <p className="text-xs text-[#FAF7F2]/80 leading-relaxed font-light">
               Curators of authentic handwoven pure silks, bridal Kanjeevarams, antique Banarasi brocades, and contemporary luxury weaves. Honoring centuries of loom mastery.
             </p>

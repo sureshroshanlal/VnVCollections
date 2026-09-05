@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/navigation';
 import Image from 'next/image';
 import { Menu, X, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,22 +20,8 @@ export default function Navbar() {
 
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Brand Logo & Emblem */}
-        <a href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-full border border-[#D4AF37]/50 p-1 flex items-center justify-center bg-[#3B0610] shadow-md group-hover:border-[#F9E29D] transition-colors">
-            <svg viewBox="0 0 100 100" className="w-7 h-7 fill-[#D4AF37]">
-              <path d="M50 15 C35 15, 20 35, 20 60 C20 78, 35 88, 50 90 C65 88, 80 78, 80 60 C80 35, 65 15, 50 15 Z" fill="none" stroke="#D4AF37" strokeWidth="3"/>
-              <path d="M50 30 C54 38, 62 48, 59 60 C56 70, 50 72, 50 72 C50 72, 44 70, 41 60 C38 48, 46 38, 50 30 Z"/>
-              <circle cx="50" cy="22" r="3"/>
-            </svg>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-serif text-lg sm:text-xl font-bold tracking-wider text-[#F9E29D] group-hover:text-white transition-colors">
-              VAARAHI VAAGDEVI
-            </span>
-            <span className="text-[10px] tracking-[0.28em] text-[#D4AF37] uppercase -mt-0.5">
-              COLLECTIONS
-            </span>
-          </div>
+        <a href="/" className="block" title="Vaarahi Vaagdevi Collections">
+          <BrandLogo size="md" />
         </a>
 
         {/* Desktop Navigation Links */}

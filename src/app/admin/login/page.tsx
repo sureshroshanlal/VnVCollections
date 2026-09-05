@@ -2,57 +2,106 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, Lock, Mail, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, Sparkles, AlertCircle, CheckCircle2, UserPlus } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMessage('');
 
     try {
-      // 1. If live Supabase is configured, use Supabase Auth
-      if (isSupabaseConfigured && supabase) {
-        const { data, error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (authError) {
-          setError(authError.message);
+      if (isSignUpMode) {
+        // --- ADMIN SIGN UP MODE ---
+        if (password !== confirmPassword) {
+          setError('Passwords do not match.');
           setLoading(false);
           return;
         }
 
-        if (data.session) {
+        if (password.length < 6) {
+          setError('Password must be at least 6 characters.');
+          setLoading(false);
+          return;
+        }
+
+        if (isSupabaseConfigured && supabase) {
+          const { data, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+          });
+
+          if (signUpError) {
+            setError(signUpError.message);
+            setLoading(false);
+            return;
+          }
+
+          if (data.session) {
+            localStorage.setItem('vv_admin_auth', 'true');
+            router.push('/admin');
+            return;
+          } else {
+            setSuccessMessage(
+              'Admin account created in Supabase! If email confirmation is enabled, please verify your email or toggle "Auto Confirm User" in the Supabase Dashboard.'
+            );
+            setIsSignUpMode(false);
+            setLoading(false);
+            return;
+          }
+        } else {
+          // Demo fallback
           localStorage.setItem('vv_admin_auth', 'true');
           router.push('/admin');
           return;
         }
-      }
-
-      // 2. Demo / Standalone fallback mode
-      // Default boutique admin credentials for instant testing
-      if ((email === 'admin@vaarahivaagdevi.com' || email === 'admin') && password === 'vaarahi2026') {
-        localStorage.setItem('vv_admin_auth', 'true');
-        router.push('/admin');
-        return;
-      } else if (password === 'admin' || password === 'vaarahi2026') {
-        localStorage.setItem('vv_admin_auth', 'true');
-        router.push('/admin');
-        return;
       } else {
-        setError('Invalid credentials. Use demo: admin@vaarahivaagdevi.com / vaarahi2026');
+        // --- ADMIN SIGN IN MODE ---
+        if (isSupabaseConfigured && supabase) {
+          const { data, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+          if (authError) {
+            setError(authError.message);
+            setLoading(false);
+            return;
+          }
+
+          if (data.session) {
+            localStorage.setItem('vv_admin_auth', 'true');
+            router.push('/admin');
+            return;
+          }
+        }
+
+        // Demo / Standalone fallback mode
+        if (
+          ((email === 'admin@vaarahivaagdevi.com' || email === 'admin') && password === 'vaarahi2026') ||
+          password === 'admin' ||
+          password === 'vaarahi2026'
+        ) {
+          localStorage.setItem('vv_admin_auth', 'true');
+          router.push('/admin');
+          return;
+        } else {
+          setError('Invalid credentials. If using Supabase, ensure the user exists in Authentication > Users.');
+        }
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -84,12 +133,53 @@ export default function AdminLoginPage() {
           </p>
         </div>
 
+        {/* Mode Toggle Tabs */}
+        <div className="grid grid-cols-2 bg-[#FAF7F2] border-b border-gray-200 text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUpMode(false);
+              setError('');
+              setSuccessMessage('');
+            }}
+            className={`py-3 text-center transition-colors ${
+              !isSignUpMode
+                ? 'bg-white text-[#7A1228] border-b-2 border-[#7A1228] font-bold'
+                : 'text-gray-500 hover:text-gray-800'
+            }`}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUpMode(true);
+              setError('');
+              setSuccessMessage('');
+            }}
+            className={`py-3 text-center transition-colors ${
+              isSignUpMode
+                ? 'bg-white text-[#7A1228] border-b-2 border-[#7A1228] font-bold'
+                : 'text-gray-500 hover:text-gray-800'
+            }`}
+          >
+            Create Admin User
+          </button>
+        </div>
+
         {/* Form Body */}
-        <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-4">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-lg flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-3 rounded-lg flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+              <span>{successMessage}</span>
             </div>
           )}
 
@@ -98,7 +188,7 @@ export default function AdminLoginPage() {
             <div className="relative">
               <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
-                type="text"
+                type="email"
                 required
                 placeholder="admin@vaarahivaagdevi.com"
                 value={email}
@@ -123,29 +213,51 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
+          {isSignUpMode && (
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-700 block">Confirm Password</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2.5 bg-[#FAF7F2] border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                />
+              </div>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-[#4D0917] hover:bg-[#7A1228] text-[#F9E29D] font-semibold py-3 rounded-xl text-xs sm:text-sm tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2"
           >
-            <span>{loading ? 'Authenticating...' : 'Sign In to Portal'}</span>
+            <span>
+              {loading
+                ? 'Processing...'
+                : isSignUpMode
+                ? 'Create Supabase Admin Account'
+                : 'Sign In to Portal'}
+            </span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          {/* Quick Demo Access */}
-          <div className="pt-4 border-t border-gray-100 text-center">
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="inline-flex items-center gap-1.5 text-xs text-[#9C7A1D] hover:text-[#7A1228] font-semibold"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>One-Click Demo Admin Sign In</span>
-            </button>
-            <p className="text-[10px] text-gray-400 mt-1">
-              Demo credentials: <code className="bg-gray-100 px-1 py-0.5 rounded">admin@vaarahivaagdevi.com</code> / <code className="bg-gray-100 px-1 py-0.5 rounded">vaarahi2026</code>
-            </p>
-          </div>
+          {/* Quick Demo Access (for Sign In mode) */}
+          {!isSignUpMode && (
+            <div className="pt-4 border-t border-gray-100 text-center">
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                className="inline-flex items-center gap-1.5 text-xs text-[#9C7A1D] hover:text-[#7A1228] font-semibold"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>One-Click Demo Admin Sign In</span>
+              </button>
+            </div>
+          )}
         </form>
 
         {/* Back Link */}
