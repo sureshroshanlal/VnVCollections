@@ -1,26 +1,116 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-crimson: #7A1228;
+  --primary-dark-crimson: #4D0917;
+  --primary-gold: #D4AF37;
+  --primary-light-gold: #F3E5AB;
+  --primary-antique-gold: #9C7A1D;
+  --accent-emerald: #0A3B32;
+  --accent-teal: #104E43;
+  --bg-ivory: #FAF7F2;
+  --bg-parchment: #F3ECE1;
+  --text-dark: #1A1617;
+  --text-muted: #5C5552;
+  
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-cinzel: var(--font-cinzel), serif;
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-cinzel: var(--font-cinzel), serif;
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  
+  --color-crimson-900: #3B0610;
+  --color-crimson-800: #4D0917;
+  --color-crimson-700: #640E20;
+  --color-crimson-600: #7A1228;
+  --color-crimson-500: #9E1B38;
+  
+  --color-gold-300: #F9E29D;
+  --color-gold-400: #E6C566;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #AA7C11;
+  --color-gold-700: #7E5B09;
+  
+  --color-emerald-800: #0A3B32;
+  --color-emerald-700: #104E43;
+  
+  --color-ivory-50: #FCFAF7;
+  --color-ivory-100: #FAF7F2;
+  --color-ivory-200: #F4EFE6;
+  --color-ivory-300: #EADBCE;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--bg-ivory);
+  color: var(--text-dark);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-serif);
+}
+
+.font-brand {
+  font-family: var(--font-cinzel);
+}
+
+/* Luxury Gold & Metallic Gradients */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #F9E29D 0%, #D4AF37 40%, #AA7C11 75%, #F9E29D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #E6C566 0%, #D4AF37 50%, #B8860B 100%);
+}
+
+.crimson-gradient-bg {
+  background: linear-gradient(135deg, #7A1228 0%, #540B1A 60%, #3B0610 100%);
+}
+
+/* Subtle Shimmer Effect for Luxury Badges */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-gold {
+  background: linear-gradient(90deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.4) 50%, rgba(212,175,55,0.1) 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 4s infinite linear;
+}
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF7F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #AA7C11;
+}
+
+/* Glassmorphic Cards */
+.glass-luxury {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.glass-dark-luxury {
+  background: rgba(26, 22, 23, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
 }
