@@ -400,7 +400,7 @@ export function generateWhatsAppInquiryUrl(
   selectedColor?: string
 ): string {
   const boutiquePhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919876543210';
-  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://vaarahivaagdevi.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? window.location.origin : 'https://vaarahivaagdevi.com');
   const productUrl = `${siteUrl}/catalog/${product.slug}`;
 
   const colorLine = selectedColor

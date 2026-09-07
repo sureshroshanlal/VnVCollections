@@ -14,7 +14,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-4">
             <a href="/" className="inline-block">
-              <BrandLogo variant="on-dark" size="lg" />
+              <BrandLogo variant="on-dark" size="md" />
             </a>
             <p className="text-xs text-[#FAF7F2]/80 leading-relaxed font-light">
               Curators of authentic handwoven pure silks, bridal Kanjeevarams, antique Banarasi brocades, and contemporary luxury weaves. Honoring centuries of loom mastery.
