@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminNav from '@/components/admin/AdminNav';
 import SaleEntryModal from '@/components/admin/SaleEntryModal';
+import ProductDetailModal from '@/components/admin/ProductDetailModal';
 import { fetchProducts, deleteProduct, saveProduct } from '@/lib/storeService';
 import { Product } from '@/lib/types';
 import {
@@ -15,6 +16,8 @@ import {
   Sparkles,
   AlertTriangle,
   Search,
+  Eye,
+  Edit3,
 } from 'lucide-react';
 
 export default function InventoryManagementPage() {
@@ -24,6 +27,8 @@ export default function InventoryManagementPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [saleModalProduct, setSaleModalProduct] = useState<string | undefined>(undefined);
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
+  const [selectedProductForView, setSelectedProductForView] = useState<Product | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   // Auth Guard
   useEffect(() => {
@@ -63,6 +68,11 @@ export default function InventoryManagementPage() {
   const openSaleModal = (productId: string) => {
     setSaleModalProduct(productId);
     setIsSaleModalOpen(true);
+  };
+
+  const openViewModal = (product: Product) => {
+    setSelectedProductForView(product);
+    setIsViewModalOpen(true);
   };
 
   const filteredProducts = products.filter((p) => {
@@ -153,11 +163,21 @@ export default function InventoryManagementPage() {
                       {/* Item Image & Title */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <img
-                            src={product.images?.[0] || '/images/products/kanjeevaram-crimson.jpg'}
-                            alt={product.title}
-                            className="w-12 h-14 object-cover rounded-lg border border-gray-200"
-                          />
+                          <button
+                            type="button"
+                            onClick={() => openViewModal(product)}
+                            className="group/thumb relative w-12 h-14 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D4AF37] transition-colors"
+                            title="Click to view full specifications"
+                          >
+                            <img
+                              src={product.images?.[0] || '/images/products/kanjeevaram-crimson.jpg'}
+                              alt={product.title}
+                              className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                              <Eye className="w-3.5 h-3.5 text-white drop-shadow-sm" />
+                            </div>
+                          </button>
                           <div>
                             <div className="flex items-center gap-1.5">
                               <span className="font-mono text-[10px] font-bold text-gray-500 block">
@@ -167,14 +187,14 @@ export default function InventoryManagementPage() {
                                 {product.category || 'Saree'}
                               </span>
                             </div>
-                            <a
-                              href={`/catalog/${product.slug}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-serif font-bold text-gray-900 hover:text-[#7A1228] line-clamp-1 text-xs"
+                            <button
+                              type="button"
+                              onClick={() => openViewModal(product)}
+                              className="font-serif font-bold text-gray-900 hover:text-[#7A1228] line-clamp-1 text-xs text-left transition-colors"
+                              title="Click to view full details"
                             >
                               {product.title}
-                            </a>
+                            </button>
                             
                             {/* Color Variants Stock Breakdown */}
                             <div className="flex flex-wrap gap-1 mt-1">
@@ -270,19 +290,41 @@ export default function InventoryManagementPage() {
 
                       {/* Action Buttons */}
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {/* View Full Product Specifications */}
+                          <button
+                            onClick={() => openViewModal(product)}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                            title="View Full Saree Specifications & Confidential Financials"
+                          >
+                            <Eye className="w-3 h-3 text-gray-600" />
+                            <span>View</span>
+                          </button>
+
+                          {/* Edit Product Specifications */}
+                          <button
+                            onClick={() => router.push(`/admin/inventory/${product.id}/edit`)}
+                            className="bg-[#4D0917]/10 hover:bg-[#4D0917] text-[#7A1228] hover:text-[#F9E29D] px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-all"
+                            title="Edit Saree Details, Pricing & Color Variants"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span>Edit</span>
+                          </button>
+
+                          {/* Record Sale */}
                           <button
                             onClick={() => openSaleModal(product.id)}
-                            className="bg-[#25D366] hover:bg-[#1EBE5D] text-white px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 shadow-xs"
+                            className="bg-[#25D366] hover:bg-[#1EBE5D] text-white px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 shadow-2xs transition-colors"
                             title="Record a sale for this piece"
                           >
                             <ShoppingBag className="w-3 h-3 fill-white" />
                             <span>Sell</span>
                           </button>
 
+                          {/* Delete Item */}
                           <button
                             onClick={() => handleDelete(product.id, product.title)}
-                            className="text-gray-400 hover:text-red-600 p-1 rounded"
+                            className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
                             title="Delete Item"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -297,6 +339,16 @@ export default function InventoryManagementPage() {
           </div>
         </div>
       </main>
+
+      {/* Product Detail Modal (Quick View & Specs) */}
+      <ProductDetailModal
+        product={selectedProductForView}
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        onEdit={(p) => router.push(`/admin/inventory/${p.id}/edit`)}
+        onRecordSale={(prodId) => openSaleModal(prodId)}
+        onDelete={(prodId, title) => handleDelete(prodId, title)}
+      />
 
       {/* Sale Entry Modal */}
       <SaleEntryModal

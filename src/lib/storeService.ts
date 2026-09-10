@@ -111,6 +111,28 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
   );
 }
 
+export async function fetchProductById(id: string): Promise<Product | null> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (!error && data) {
+        return {
+          ...data,
+          color_variants: (data.color_variants as ColorVariant[]) || [],
+        } as Product;
+      }
+    } catch (err) {
+      console.warn('Supabase fetchProductById failed, falling back to products list:', err);
+    }
+  }
+  const products = await fetchProducts();
+  return products.find((p) => p.id === id || p.sku === id) || null;
+}
+
 export async function saveProduct(
   productData: Omit<Product, 'id' | 'created_at'> & { id?: string }
 ): Promise<Product> {
